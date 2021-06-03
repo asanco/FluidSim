@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include "united_solver.hpp"
+#include "solver.hpp"
 #include "display_manager.hpp"
 #include <sstream>
 #include <stdlib.h>
@@ -27,7 +27,7 @@ int main()
 	const float body_radius(4.0f);
 
 	up::Vec2 world_dimension(512.0f, 512.0f);
-	up::UnitedSolver solver(world_dimension, body_radius, { 0.0f, 980.0f });
+	up::Solver solver(world_dimension, body_radius, { 0.0f, 980.0f });
 
 	sf::RenderTexture render_tex;
 	render_tex.create(win_width, win_height);
@@ -44,13 +44,13 @@ int main()
 	const int xOffset = 50;
 	const int yOffset = 50;
 
-	//Created predetermined set of particle (1000) with random positions
-	for(int i(0); i<10; ++i){
+	//Created predetermined set of particles (1000) with random positions
+	for(int i(0); i<100; ++i){
 		int randomPosX = std::rand() % ( win_width + 1 );
 		int randomPosY = std::rand() % ( win_height + 1 );
 
-		auto b = solver.addBody(up::Vec2(randomPosX, randomPosY));
-		//auto b = solver.addBody(up::Vec2(col + xOffset, row + yOffset));
+		//auto b = solver.addBody(up::Vec2(randomPosX, randomPosY));
+		auto b = solver.addBody(up::Vec2(col + xOffset, row + yOffset));
 		//b->setVelocity(up::Vec2(0, 0));
 		col += 20;
 
@@ -63,8 +63,7 @@ int main()
 
 	//Executes neighbor search
 	//Either INDEX_SORT or SPATIAL_HASHING
-	//solver.getNeighbors("INDEX_SORT");
-	//solver.getNeighbors("SPATIAL_HASHING");
+	//solver.getNeighbors("");
 	
 	while (window.isOpen())
 	{
@@ -72,6 +71,12 @@ int main()
 
 		//Get keyboard inputs
 		displayManager.processEvents();
+
+		if (displayManager.update) {
+			solver.update(0.016f);
+			solver.getNeighbors("");
+			displayManager.setUpdate(false);
+		}
 
 		render_tex.clear(sf::Color::White);
 

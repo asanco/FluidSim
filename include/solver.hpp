@@ -17,12 +17,12 @@ namespace up
 
 using BodyPtr = fva::Handle<Body>;
 
-class UnitedSolver
+class Solver
 {
 public:
-	UnitedSolver() = default;
+	Solver() = default;
 
-	UnitedSolver(const Vec2& dimension, float body_radius, const Vec2& gravity = Vec2(0.0f, 0.0f)) :
+	Solver(const Vec2& dimension, float body_radius, const Vec2& gravity = Vec2(0.0f, 0.0f)) :
 		m_collision_solver(dimension, body_radius, m_bodies.getData(), gravity),
 		m_dimension(dimension)
 	{}
@@ -30,11 +30,7 @@ public:
 	void update(float dt)
 	{
 		m_collision_solver.update(m_bodies, m_segmets, dt);
-		m_constraint_solver.update(m_constraints, m_anchors, dt);
-
-		for (SolidSegment& s : m_segmets) {
-			s.update(dt);
-		}
+		//m_constraint_solver.update(m_constraints, m_anchors, dt);
 
 		for (Body& b : m_bodies) {
 			b.update(dt);
@@ -124,12 +120,41 @@ public:
 
 	void getNeighbors(string option)
 	{
-		if(option == "INDEX_SORT"){
+		if(option == ""){
+			basicNeighborSearch();
+		}
+		else if(option == "INDEX_SORT"){
 			indexSort(10, 10, 10);
 		}
 		else {
 			cout << "No option for neighbor search";
 		}
+	}
+
+	void basicNeighborSearch(){
+		const float kernel_support = 40;
+
+		for(int i = 0; i < m_bodies.size();i++){
+			Body currentParticle = m_bodies[i];
+			Vec2 currentParticlePos = currentParticle.position();
+			for(int j = 0; j < m_bodies.size();j++){
+				Body potentialNeighbor = m_bodies[j];
+				Vec2 potentialNeighborPos = potentialNeighbor.position();
+				if(getDistance(currentParticlePos, potentialNeighborPos)<=kernel_support){
+					currentParticle.addNeighbor();
+				}
+			}
+			if(i%10 == 0) std:: cout << std::endl;
+			std:: cout << currentParticle.m_neighbors << " ";
+			
+		}
+	}
+
+	float getDistance(Vec2 object1, Vec2 object2){
+		float a = object1.x - object2.x;
+		float b = object1.y - object2.y;
+		float distance = sqrt(a * a + b * b); 
+		return distance;
 	}
 
 	void indexSort(int edgeSize, int gridColumns, int gridRows){

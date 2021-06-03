@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "united_solver.hpp"
+#include "solver.hpp"
 #include "event_manager.hpp"
 #include "segment.hpp"
 #include <swarm.hpp>
@@ -9,7 +9,7 @@
 class DisplayManager
 {
 public:
-    DisplayManager(sf::RenderTarget& window, sf::RenderWindow& ev_window, up::UnitedSolver& collisionManager);
+    DisplayManager(sf::RenderTarget& window, sf::RenderWindow& ev_window, up::Solver& collisionManager);
 
     //offset mutators
     void setOffset(float x, float y) {m_offsetX=x; m_offsetY=y;};
@@ -25,11 +25,13 @@ public:
     void zoom(float zoomFactor) {m_zoom *= zoomFactor;};
 
     // draw the current gameWorld
-    void draw(bool showInner);
+    void draw();
 
 	void updateVertexArray(const std::vector<up::Body>& bodies, uint32_t id, uint32_t step);
 
 	void processEvents();
+
+	void setUpdate(bool nUpdate);
 
     // getters
     up::Vec2 getOffset() const {return up::Vec2(m_offsetX, m_offsetY);};
@@ -63,7 +65,7 @@ public:
 	}
 
 private:
-	up::UnitedSolver& m_solver;
+	up::Solver& m_solver;
 	sf::RenderTarget& m_target;
 	sf::RenderWindow& m_window;
     sf::Texture m_bodyTexture;

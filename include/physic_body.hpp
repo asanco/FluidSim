@@ -13,6 +13,7 @@ public:
 	Body() = default;
 	Body(const Vec2& pos, float radius_)
 		: m_index(0)
+		, m_neighbors(0)
 		, m_position(pos)
 		, m_old_position(pos)
 		, m_acceleration()
@@ -30,35 +31,22 @@ public:
 	
 	Body& operator=(const Body& b)
 	{
-		m_position     = b.m_position;
+		m_neighbors = b.m_neighbors;
+		m_position = b.m_position;
 		m_old_position = b.m_old_position;
 		m_acceleration = b.m_acceleration;
-		pressure     = b.pressure;
-		radius       = b.radius;
+		pressure = b.pressure;
+		radius = b.radius;
 
 		return *this;
 	}
 
 	void update(float dt)
 	{
-		const Vec2 v(velocity());
+		const Vec2 vel(0,1);
 
-		inertia = 1.0f + (move_acc) / (v.length() + 1.0f);
-		move_acc *= 0.5f;
-
-		// Air friction
-		m_acceleration -= v * friction;
-
-		// This prevent from too much compression
-		const float anti_pressure_factor(std::pow(1.0f / inertia, 2));
-
-		// Verlet integration
 		m_old_position = m_position;
-		m_position += float(m_moving) * (v + m_acceleration * dt * dt);
-
-		// Reset temporary values
-		m_acceleration = {};
-		pressure = 0.0f;
+		m_position += vel;
 	}
 
 	const int& index() const
@@ -95,6 +83,14 @@ public:
 	{
 		m_index = index;
 	}
+
+	void addNeighbor(){
+		m_neighbors++;
+	}
+
+	/*void clearNeighbors(){
+		m_neighbors = 0;
+	}*/
 
 	void move(const Vec2& delta)
 	{
@@ -140,6 +136,8 @@ public:
 
 	Vec2 force_sum;
 	Vec2 last_force_sum;
+
+	int m_neighbors;
 
 	float radius;
 	float pressure;

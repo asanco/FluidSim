@@ -1,17 +1,18 @@
 #include "display_manager.hpp"
 #include <iostream>
 
-DisplayManager::DisplayManager(sf::RenderTarget& target, sf::RenderWindow& window, up::UnitedSolver& solver) :
+DisplayManager::DisplayManager(sf::RenderTarget& target, sf::RenderWindow& window, up::Solver& solver) :
 	m_window(window),
 	m_target(target),
 	m_solver(solver),
+	m_event_manager(window),
 	m_zoom(1.0f),
 	m_offsetX(0.0f),
 	m_offsetY(0.0f),
 	m_swarm(16),
-	m_va(sf::Quads, 0)
+	m_va(sf::Quads, 0),
+	update(false)
 {
-
 	m_windowOffsetX = 0;
     m_windowOffsetY = 0;
 
@@ -130,6 +131,7 @@ void DisplayManager::processEvents()
 		case sf::Event::KeyPressed:
 			if (event.key.code == sf::Keyboard::Escape) m_window.close();
 			else if ((event.key.code == sf::Keyboard::Subtract)) zoom(0.8f);
+			else if ((event.key.code == sf::Keyboard::Space)) update = !update;
 			else if ((event.key.code == sf::Keyboard::Add)) zoom(1.2f);
 			else if ((event.key.code == sf::Keyboard::E)) emit = !emit;
 			else if ((event.key.code == sf::Keyboard::D)) debug_mode = !debug_mode;
@@ -174,4 +176,9 @@ void DisplayManager::processEvents()
 			break;
 		}
 	}
+}
+
+void DisplayManager::setUpdate(bool nUpdate)
+{
+	update = nUpdate;
 }
