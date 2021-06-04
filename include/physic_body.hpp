@@ -16,8 +16,6 @@ public:
 		, m_neighbors(0)
 		, m_position(pos)
 		, m_old_position(pos)
-		, m_acceleration()
-		, pressure(0.0f)
 		, radius(radius_)
 		, m_moving(1)
 		, inertia(1.0f)
@@ -34,8 +32,6 @@ public:
 		m_neighbors = b.m_neighbors;
 		m_position = b.m_position;
 		m_old_position = b.m_old_position;
-		m_acceleration = b.m_acceleration;
-		pressure = b.pressure;
 		radius = b.radius;
 
 		return *this;
@@ -43,10 +39,10 @@ public:
 
 	void update(float dt)
 	{
-		const Vec2 vel(0,1);
+		const Vec2 v(velocity());
 
 		m_old_position = m_position;
-		m_position += vel;
+		m_position += v;
 	}
 
 	const int& index() const
@@ -62,11 +58,6 @@ public:
 	const Vec2& oldPosition() const
 	{
 		return m_old_position;
-	}
-
-	const Vec2& acceleration() const
-	{
-		return m_acceleration;
 	}
 
 	Vec2 velocity() const
@@ -104,16 +95,6 @@ public:
 		m_old_position += delta;
 	}
 
-	void accelerate(const Vec2& acceleration)
-	{
-		m_acceleration += acceleration;
-	}
-
-	void addPressure(float pressure_)
-	{
-		pressure += pressure_;
-	}
-
 	void stop()
 	{
 		m_old_position = m_position;
@@ -140,7 +121,6 @@ public:
 	int m_neighbors;
 
 	float radius;
-	float pressure;
 	float inertia;
 
 	float move_acc;
@@ -155,7 +135,6 @@ private:
 	int m_index;
 	Vec2 m_position;
 	Vec2 m_old_position;
-	Vec2 m_acceleration;
 
 	uint8_t m_moving;
 };

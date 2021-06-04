@@ -103,7 +103,6 @@ public:
 			const float distFromB1((segment_closest_point - getBody1Position()).length());
 			col_vec.normalize();
 			body.move(delta * col_vec);
-			body.addPressure(delta);
 
 			moveAt(-delta * col_vec, distFromB1);
 		}

@@ -46,12 +46,12 @@ int main()
 
 	//Created predetermined set of particles (1000) with random positions
 	for(int i(0); i<100; ++i){
-		int randomPosX = std::rand() % ( win_width + 1 );
-		int randomPosY = std::rand() % ( win_height + 1 );
+		int randomPosX = std::rand() % ( win_width + 10 );
+		int randomPosY = std::rand() % ( win_height + 10 );
 
-		//auto b = solver.addBody(up::Vec2(randomPosX, randomPosY));
-		auto b = solver.addBody(up::Vec2(col + xOffset, row + yOffset));
-		//b->setVelocity(up::Vec2(0, 0));
+		auto b = solver.addBody(up::Vec2(randomPosX, randomPosY));
+		//auto b = solver.addBody(up::Vec2(col + xOffset, row + yOffset));
+		b->setVelocity(up::Vec2(0, 1));
 		col += 20;
 
 		if(i >=rowSize - 1){
@@ -60,10 +60,6 @@ int main()
 			rowSize += 10;
 		}
 	}
-
-	//Executes neighbor search
-	//Either INDEX_SORT or SPATIAL_HASHING
-	//solver.getNeighbors("");
 	
 	while (window.isOpen())
 	{
@@ -75,7 +71,7 @@ int main()
 		if (displayManager.update) {
 			solver.update(0.016f);
 			solver.getNeighbors("");
-			displayManager.setUpdate(false);
+			//displayManager.setUpdate(false);
 		}
 
 		render_tex.clear(sf::Color::White);

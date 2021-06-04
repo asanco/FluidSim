@@ -29,8 +29,6 @@ namespace up
 
 		void update(fva::SwapArray<Body>& bodies, fva::SwapArray<SolidSegment>& segments, float dt)
 		{
-			applyGravity(bodies);
-
 			collision_time = 0.0f;
 			grid_time = 0.0f;
 
@@ -38,6 +36,8 @@ namespace up
 
 			clock_local.restart();
 			solveBoundaryCollisions(bodies);
+
+			/*
 			m_grid.addBodies(bodies.getData());
 			m_grid.addSegments(segments.getData());
 			
@@ -55,6 +55,7 @@ namespace up
 			}
 
 			total_update_time = clock_global.getElapsedTime().asMicroseconds() * 0.001f;
+			*/
 		}
 
 		const Vec2& dimension() const
@@ -108,15 +109,6 @@ namespace up
 		const float m_body_radius;
 		uint32_t m_current_iteration;
 
-		void applyGravity(fva::SwapArray<Body>& bodies)
-		{
-			for (Body& b : bodies) {
-				b.accelerate(m_gravity);
-				b.debug_collision = false;
-				b.done = false;
-				b.check_count = 0;
-			}
-		}
 
 		void solveBoundaryCollisions(fva::SwapArray<Body>& bodies)
 		{
@@ -124,19 +116,19 @@ namespace up
 				Vec2 pos = b.position();
 				float radius = b.radius;
 				if (pos.x < radius) {
-					b.move({ radius - pos.x, 0.0f });
-					//b.stop();
+					//b.move({ radius - pos.x, 0.0f });
+					b.stop();
 				} else if (pos.x > m_dimension.x - radius) {
-					b.move({ m_dimension.x - radius - pos.x, 0.0f });
-					//b.stop();
+					//b.move({ m_dimension.x - radius - pos.x, 0.0f });
+					b.stop();
 				}
 
 				if (pos.y < radius) {
-					b.move({ 0.0f, radius - pos.y });
-					//b.stop();
+					//b.move({ 0.0f, radius - pos.y });
+					b.stop();
 				} else if (pos.y > m_dimension.y - radius) {
-					b.move({ 0.0f, m_dimension.y - radius - pos.y });
-					//b.stop();
+					//b.move({ 0.0f, m_dimension.y - radius - pos.y });
+					b.stop();
 				}
 			}
 		}
@@ -201,22 +193,7 @@ namespace up
 
 				col_axe.normalize();
 				b1.move(col_axe*(+delta_col * mass_factor_2));
-				b2.move(col_axe*(-delta_col * mass_factor_1));
-
-				float force_1 = std::max(-(b1.acceleration().dot(col_axe)), 0.0f);
-				float force_2 = std::max(  b2.acceleration().dot(col_axe) , 0.0f);
-
-				b1.force_sum += col_axe * force_2;
-				b2.force_sum += col_axe * force_1;
-
-				/*const float cohesion(0.5f);
-				b1.setVelocity(-(cohesion)*delta_v);
-				b2.setVelocity( (cohesion)*delta_v);
-
-				b1.addPressure(delta_col * prec_fact);
-				b2.addPressure(delta_col * prec_fact);*/
-				
-
+				b2.move(col_axe*(-delta_col * mass_factor_1));				
 			}
 		}
 
@@ -224,7 +201,6 @@ namespace up
 		{
 			for (GridCell<GRID_CELL_SIZE>& cell : data) {
 				solveBodySegment(cell.segments, cell.items, cell.item_count);
-				//solveSegmentSegment(cell.segments);
 			}
 		}
 

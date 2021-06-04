@@ -11,10 +11,6 @@ class DisplayManager
 public:
     DisplayManager(sf::RenderTarget& window, sf::RenderWindow& ev_window, up::Solver& collisionManager);
 
-    //offset mutators
-    void setOffset(float x, float y) {m_offsetX=x; m_offsetY=y;};
-    void setOffset(const up::Vec2& off) {m_offsetX=off.x; m_offsetY=off.y;};
-
     void addOffset(float x, float y) {m_offsetX-=x/m_zoom; m_offsetY-=y/m_zoom;};
     void addOffset(const up::Vec2& off) {m_offsetX-=off.x/m_zoom; m_offsetY-=off.y/m_zoom;};
 
@@ -34,18 +30,10 @@ public:
 	void setUpdate(bool nUpdate);
 
     // getters
-    up::Vec2 getOffset() const {return up::Vec2(m_offsetX, m_offsetY);};
     float getZoom() const {return m_zoom;};
 	up::Vec2 worldCoordToDisplayCoord(const up::Vec2&);
 	up::Vec2 displayCoordToWorldCoord(const up::Vec2&);
 	up::Body* getBodyAt(float x, float y);
-
-	// Draw constraints
-	void drawConstraints(const fva::SwapArray<up::Constraint>& constraints);
-
-	void drawPoint(const up::Vec2& point);
-	void drawSegment(const up::SolidSegment& segment);
-	void drawGrid(const up::Grid<GRID_CELL_SIZE>& grid, const sf::RenderStates& state);
 
 	bool clic;
 	bool emit;

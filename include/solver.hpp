@@ -30,26 +30,10 @@ public:
 	void update(float dt)
 	{
 		m_collision_solver.update(m_bodies, m_segmets, dt);
-		//m_constraint_solver.update(m_constraints, m_anchors, dt);
 
 		for (Body& b : m_bodies) {
 			b.update(dt);
 		}
-	}
-
-	float getGridTime() const
-	{
-		return m_collision_solver.grid_time;
-	}
-
-	float getCollisionTime() const
-	{
-		return m_collision_solver.collision_time;
-	}
-
-	float getUpdateTime() const
-	{
-		return m_collision_solver.total_update_time;
 	}
 
 	BodyPtr addBody(const Vec2& position)
@@ -61,11 +45,6 @@ public:
 	{
 		float r(std::min(radius, m_collision_solver.defaultBodyRadius()));
 		return m_bodies.add(position, r);
-	}
-
-	ConstraintPtr addConstraint(BodyPtr& body1, BodyPtr& body2, float length = 0.0f, float resistance = 1000.0f)
-	{
-		return m_constraints.add(body1, body2, length, resistance);
 	}
 
 	SolidSegmentPtr addSolidSegment(BodyPtr& body1, BodyPtr& body2)
@@ -88,21 +67,6 @@ public:
 		return m_bodies.getData();
 	}
 
-	std::vector<Body> getBodiesCopy()
-	{
-		return m_bodies.getData();
-	}
-
-	const fva::SwapArray<Constraint>& getConstraints() const
-	{
-		return m_constraints;
-	}
-
-	const fva::SwapArray<SolidSegment>& getSegments() const
-	{
-		return m_segmets;
-	}
-
 	Body* getBodyAt(const up::Vec2& position)
 	{
 		return m_collision_solver.getBodyAt(position, m_bodies);
@@ -113,11 +77,6 @@ public:
 		return m_collision_solver.getGrid();
 	}
 
-	void resetDebug()
-	{
-		m_collision_solver.reset_debug(m_bodies);
-	}
-
 	void getNeighbors(string option)
 	{
 		if(option == ""){
@@ -126,11 +85,15 @@ public:
 		else if(option == "INDEX_SORT"){
 			indexSort(10, 10, 10);
 		}
+		else if(option == "SPATIAL_HASHING"){
+			//spatialHashing();
+		}
 		else {
 			cout << "No option for neighbor search";
 		}
 	}
 
+	//Naive neighbor search algorithm
 	void basicNeighborSearch(){
 		const float kernel_support = 40;
 
@@ -144,12 +107,13 @@ public:
 					currentParticle.addNeighbor();
 				}
 			}
-			if(i%10 == 0) std:: cout << std::endl;
-			std:: cout << currentParticle.m_neighbors << " ";
+			//if(i%10 == 0) std:: cout << std::endl;
+			//std:: cout << currentParticle.m_neighbors << " ";
 			
 		}
 	}
 
+	//Get euclidean distance between two particles
 	float getDistance(Vec2 object1, Vec2 object2){
 		float a = object1.x - object2.x;
 		float b = object1.y - object2.y;
@@ -158,9 +122,6 @@ public:
 	}
 
 	void indexSort(int edgeSize, int gridColumns, int gridRows){
-		std::cout << "Starting indexSort" << std::endl;
-		//std::cout << m_bodies.size() << std::endl;
-
 		//Create indices array
 		int gridIndices[(gridColumns * gridRows) + 1] = {};
 		for(int i = 0; i <= gridRows * gridColumns; i++){
@@ -188,11 +149,8 @@ public:
 private:
 	const Vec2 m_dimension;
 	CollisionSolver m_collision_solver;
-	ConstraintSolver m_constraint_solver;
 
 	fva::SwapArray<Body> m_bodies;
-	fva::SwapArray<Constraint> m_constraints;
-	fva::SwapArray<Anchor> m_anchors;
 	fva::SwapArray<SolidSegment> m_segmets;
 
 	friend CollisionSolver;
