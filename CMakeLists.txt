@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(UnitedEngine)
+project(FluidSim)
 
 # --------- Global compiler options -------------
 set(CMAKE_CXX_STANDARD 14)
@@ -24,5 +24,4 @@ FIND_PACKAGE(Threads REQUIRED)
 
 # ----------------- Sources -----------------------
 # This adds the subdirectories to "load" the other CMakeLists.txt.
-add_subdirectory(lib)
 add_subdirectory(src)
