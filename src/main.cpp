@@ -21,22 +21,21 @@ static sf::VertexArray m_va(sf::Quads, 0);
 std::ofstream simulationFile;
 
 //Particle config
-const static int INIT_PARTICLES = 40;
-const static int PARTICLE_RADIUS = 8;
+const static int INIT_PARTICLES = 100;
+const static int PARTICLE_RADIUS_VIZ = 8;
 const static int BOUNDARY_PARTICLES = 63;
 
-const static Vector2d G(0.f, -9.8f); // external (gravitational) forces
+const static Vector2d G(0.f, -9.8f); // gravity forces
 
-const static float H = 16.f;				// Kernel radius 16
-const static float HSQ = H * H;				// radius^2 for optimization
+const static float H = 16.f;				// Kernel support 
 const static float EPS = H; 				// Boundary epsilon
-const static float MASS = 45.f;				// assume all particles have the same mass 65
-const static float VISC = 5.f;			// 550
+const static float MASS = 45.f;			
+const static float VISC = 5.f;			// 5
 
-const static float REST_DENS = 0.1f;		 // rest density 0.5f
-const static float STIFFNESS = 2.f;		 // const for equation of state 2000
+const static float REST_DENS = 0.176f;		 // rest density 0.1f
+const static float STIFFNESS = 2.f;		 // const for equation of state 2
 
-static float DT = 0.001f;			 // integration timestep
+static float DT = 0.01f;			 // integration timestep
 
 const static float BOUND_DAMPING = -0.5f;
 
@@ -132,10 +131,10 @@ void Render(sf::RenderTexture& m_target)
 	{
 		Particle p = particles[i];
 
-		m_va[4 * i + 0].position = sf::Vector2f(p.x(0) - PARTICLE_RADIUS, p.x(1) - PARTICLE_RADIUS);
-		m_va[4 * i + 1].position = sf::Vector2f(p.x(0) + PARTICLE_RADIUS, p.x(1) - PARTICLE_RADIUS);
-		m_va[4 * i + 2].position = sf::Vector2f(p.x(0) + PARTICLE_RADIUS, p.x(1) + PARTICLE_RADIUS);
-		m_va[4 * i + 3].position = sf::Vector2f(p.x(0) - PARTICLE_RADIUS, p.x(1) + PARTICLE_RADIUS);
+		m_va[4 * i + 0].position = sf::Vector2f(p.x(0) - PARTICLE_RADIUS_VIZ, p.x(1) - PARTICLE_RADIUS_VIZ);
+		m_va[4 * i + 1].position = sf::Vector2f(p.x(0) + PARTICLE_RADIUS_VIZ, p.x(1) - PARTICLE_RADIUS_VIZ);
+		m_va[4 * i + 2].position = sf::Vector2f(p.x(0) + PARTICLE_RADIUS_VIZ, p.x(1) + PARTICLE_RADIUS_VIZ);
+		m_va[4 * i + 3].position = sf::Vector2f(p.x(0) - PARTICLE_RADIUS_VIZ, p.x(1) + PARTICLE_RADIUS_VIZ);
 
 		m_va[4 * i + 0].texCoords = sf::Vector2f(0, 0);
 		m_va[4 * i + 1].texCoords = sf::Vector2f(512, 0);
@@ -160,7 +159,6 @@ void NeighborSearch()
 	{
 		Particle p = particles[i];
 		p.neighbors.clear();
-		//std::cout << "Particle " << i << std::endl;
 
 		for (int j = 0; j < particles.size(); j++)
 		{
@@ -170,7 +168,6 @@ void NeighborSearch()
 
 			if(distance < 2*H) {
 				p.neighbors.push_back(Particle(n.x(0), n.x(1), n.isBoundary));
-				if(i == 14) std::cout << particles[14].neighbors.size() << std::endl;
 			}
 		}
 	}
